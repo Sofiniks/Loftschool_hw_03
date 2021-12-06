@@ -1,19 +1,23 @@
 {
+  "user": {
+    "login": "sofija.nikitina@inbox.lv",
+    "password": "sofiniks"
+  },
   "skills": [
     {
-      "number": 12,
+      "number": 7,
       "text": "Возраст начала занятий на скрипке"
     },
     {
-      "number": 76,
+      "number": 6,
       "text": "Концертов отыграл"
     },
     {
-      "number": 30,
+      "number": 8,
       "text": "Максимальное число городов в туре"
     },
     {
-      "number": 20,
+      "number": 11,
       "text": "Лет на сцене в качестве скрипача"
     }
   ],
@@ -55,11 +59,6 @@
     },
     {
       "src": "./assets/img/products/Work8.jpg",
-      "name": "Вино вдохновение",
-      "price": 600
-    },
-    {
-      "src": "./assets/img/products/Work9.jpg",
       "name": "Вино вдохновение",
       "price": 600
     }

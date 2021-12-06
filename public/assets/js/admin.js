@@ -1,1 +1,1 @@
-console.log('Admin script')
+console.log('Admin script');

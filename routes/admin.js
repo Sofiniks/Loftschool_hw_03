@@ -1,5 +1,9 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
+const path = require('path');
+const db = require('../models/db.js');
+const formidable = require('formidable');
+const { existsSync, mkdirSync, renameSync, unlinkSync } = require('fs');
 
 router.get('/', (req, res, next) => {
   // TODO: Реализовать, подстановку в поля ввода формы 'Счетчики'
@@ -8,26 +12,46 @@ router.get('/', (req, res, next) => {
 })
 
 router.post('/skills', (req, res, next) => {
-  /*
-  TODO: Реализовать сохранение нового объекта со значениями блока скиллов
-
-    в переменной age - Возраст начала занятий на скрипке
-    в переменной concerts - Концертов отыграл
-    в переменной cities - Максимальное число городов в туре
-    в переменной years - Лет на сцене в качестве скрипача
-  */
-  res.send('Реализовать сохранение нового объекта со значениями блока скиллов')
+  const { age, concerts, cities, years } = req.body;
+  const arr = [age, concerts, cities, years];
+  const skills = db.get('skills').value();
+  const newSkills = skills.map((item, index) => {
+    const newSkill = arr.filter((_, skillIndex) => skillIndex === index);
+    return { ...item, "number": parseInt(newSkill) || item.number, "text": item.text }
+  })
+  db.set('skills', newSkills).write()
+  res.redirect('/admin')
 })
 
 router.post('/upload', (req, res, next) => {
-  /* TODO:
-   Реализовать сохранения объекта товара на стороне сервера с картинкой товара и описанием
-    в переменной photo - Картинка товара
-    в переменной name - Название товара
-    в переменной price - Цена товара
-    На текущий момент эта информация хранится в файле data.json  в массиве products
-  */
-  res.send('Реализовать сохранения объекта товара на стороне сервера')
+  const form = new formidable.IncomingForm();
+  const upload = path.join(process.cwd(), 'public', 'upload');
+
+  if (!existsSync(upload)) {
+    mkdirSync(upload)
+  }
+
+  form.uploadDir = upload;
+
+  form.parse(req, function (err, fields, files) {
+    if (err) {
+      if (existsSync(files.photo.filepath)) {
+        unlinkSync(files.photo.filepath);
+      }
+      res.redirect('/admin');
+    }
+    const { name: title, price } = fields;
+    const { newFilename, filepath } = files.photo;
+    const fileName = path.join(upload, newFilename);
+    renameSync(filepath, fileName);
+    const index = fileName.lastIndexOf('upload');
+    const dir = fileName.slice(index);
+
+    const products = db.get('products').value();
+    db.set('products', [...products, { src: dir, name: title, price }]).write();
+
+  })
+  res.redirect('/admin');
 })
 
 module.exports = router
