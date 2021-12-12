@@ -7,7 +7,8 @@ router.get('/', (req, res, next) => {
   if (req.session.isAdmin) {
     res.redirect('/admin')
   }
-  res.render('pages/login', { title: 'SigIn page' })
+  const msglogin = req.flash('info')[0];
+  res.render('pages/login', { title: 'SigIn page', msglogin })
 })
 
 router.post('/', (req, res, next) => {
@@ -18,6 +19,7 @@ router.post('/', (req, res, next) => {
     res.redirect('/admin');
 
   } else {
+    req.flash('info', 'Неправильный логин или пароль')
     res.redirect('/login');
   }
 
