@@ -7,7 +7,8 @@ const db = require('../models/db.js');
 router.get('/', (req, res, next) => {
   const skills = db.get('skills').value();
   const products = db.get('products').value();
-  res.render('pages/index', { title: 'Main page', products, skills })
+  const msgemail = req.flash('info')[0];
+  res.render('pages/index', { title: 'Main page', products, skills, msgemail })
 })
 
 router.post('/', async (req, res, next) => {
@@ -36,9 +37,10 @@ router.post('/', async (req, res, next) => {
 
   transporter.sendMail(mailOptions, function (err) {
     if (err) {
-      console.log(err);
+      req.flash('info', 'При отправке возникла ошибка')
       throw Error;
     }
+    req.flash('info', 'Письмо успешно отправлено')
     res.redirect('/');
   })
 

@@ -18,6 +18,7 @@ router.post('/', (req, res, next) => {
     res.redirect('/admin');
 
   } else {
+    req.flash('info', 'Неправильный логин или пароль')
     res.redirect('/login');
   }
 

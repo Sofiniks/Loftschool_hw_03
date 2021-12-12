@@ -20,12 +20,13 @@ router.post('/skills', (req, res, next) => {
     return { ...item, "number": parseInt(newSkill) || item.number, "text": item.text }
   })
   db.set('skills', newSkills).write()
+  req.flash('info', 'Навыки обновлены')
   res.redirect('/admin')
 })
 
 router.post('/upload', (req, res, next) => {
   const form = new formidable.IncomingForm();
-  const upload = path.join(process.cwd(), 'public', 'upload');
+  const upload = path.join(process.cwd(), 'upload');
 
   if (!existsSync(upload)) {
     mkdirSync(upload)
@@ -38,11 +39,12 @@ router.post('/upload', (req, res, next) => {
       if (existsSync(files.photo.filepath)) {
         unlinkSync(files.photo.filepath);
       }
+      req.flash('form-info', 'Ошибка при обработке')
       res.redirect('/admin');
     }
     const { name: title, price } = fields;
-    const { newFilename, filepath } = files.photo;
-    const fileName = path.join(upload, newFilename);
+    const { originalFilename, filepath } = files.photo;
+    const fileName = path.join(upload, originalFilename);
     renameSync(filepath, fileName);
     const index = fileName.lastIndexOf('upload');
     const dir = fileName.slice(index);
@@ -51,6 +53,7 @@ router.post('/upload', (req, res, next) => {
     db.set('products', [...products, { src: dir, name: title, price }]).write();
 
   })
+  req.flash('form-info', 'Форма обработана')
   res.redirect('/admin');
 })
 
